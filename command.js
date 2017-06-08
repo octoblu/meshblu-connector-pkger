@@ -80,8 +80,7 @@ class MeshbluConnectorPkgerCommand {
 
     const spinner = ora("Pkg-ing connector").start()
 
-    const packageJSON = require(path.join(process.cwd(), "package.json"))
-    const pkger = new MeshbluConnectorPkger({ type: packageJSON.name, connectorPath: connector_path, spinner })
+    const pkger = new MeshbluConnectorPkger({ connectorPath: connector_path, spinner })
     try {
       await pkger.package()
     } catch (error) {

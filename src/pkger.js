@@ -1,28 +1,25 @@
+const fs = require("fs-extra")
 const path = require("path")
-const util = require("util")
-const exec = util.promisify(require("child_process").exec)
-const glob = util.promisify(require("glob"))
-const { mkdirp, copy } = require("fs-extra")
-const writeFile = util.promisify(require("fs").writeFile)
+const Promise = require("bluebird")
+const exec = Promise.promisify(require("child_process").exec)
+const glob = Promise.promisify(require("glob"))
 
 class MeshbluConnectorPkger {
-  constructor({ connectorPath, type, spinner }) {
+  constructor({ connectorPath, spinner }) {
+    this.packageJSON = fs.readJsonSync(path.join(connectorPath, "package.json"))
     this.connectorPath = connectorPath
-    this.type = type
+    this.type = this.packageJSON.name
     this.spinner = spinner
-    this.deployPath = path.join(connectorPath, "deploy")
+    this.deployPath = path.join(connectorPath, "deploy", "bin")
   }
 
   package() {
     return this.yarn()
       .then(() => {
-        return mkdirp(this.deployPath)
+        return fs.mkdirp(this.deployPath)
       })
       .then(() => {
         return this.dotnode()
-      })
-      .then(() => {
-        return this.mutatePackageJSON()
       })
       .then(() => {
         return this.build()
@@ -32,52 +29,40 @@ class MeshbluConnectorPkger {
       })
   }
 
-  async yarn() {
+  yarn() {
     this.spinner.color = "blue"
     this.spinner.text = "Yarn-ing it up"
     const options = {
       cwd: this.connectorPath,
     }
-    await exec(`yarn install --check-files --force`, options)
+    return exec(`yarn install --check-files --force`, options)
   }
 
-  async build() {
+  build() {
     this.spinner.color = "green"
     this.spinner.text = "De-coffeeeeeing..."
     const options = {
       cwd: this.connectorPath,
     }
-    await exec(`yarn build`, options)
-  }
-
-  mutatePackageJSON() {
-    let packageJSON = require(path.join(this.connectorPath, "package.json"))
-    let pkgJSON = require(path.join(__dirname, "../config.json"))
-    packageJSON.pkg = pkgJSON.pkg
-    return writeFile(path.join(this.connectorPath, "package.json"), JSON.stringify(packageJSON, null, 2))
+    return exec(`yarn build`, options)
   }
 
   copyToDeploy(file) {
     const basename = path.basename(file)
     const destFilename = path.join(this.deployPath, basename)
-    return copy(file, destFilename)
+    return fs.copy(file, destFilename)
   }
 
   dotnode() {
     this.spinner.color = "blue"
     this.spinner.text = "Finding those pesky .node files"
     const nodeModulesPath = path.join(this.connectorPath, "node_modules")
-    var promises = []
-    glob(`${nodeModulesPath}/**/Release/*.node`).then(files => {
-      files.forEach(file => {
-        promises.push(this.copyToDeploy(file))
-      })
+    return glob(`${nodeModulesPath}/**/Release/*.node`, { nodir: true }).map(file => {
+      return this.copyToDeploy(file)
     })
-
-    return Promise.all(promises)
   }
 
-  async pkg() {
+  pkg() {
     this.spinner.color = "green"
     this.spinner.text = "Making that pkg"
     const options = {
@@ -92,9 +77,19 @@ class MeshbluConnectorPkger {
     const nodeVersion = "8"
     const target = `node${nodeVersion}-${platform}-${arch}`
     const pkg = path.join(__dirname, "../node_modules/.bin/pkg")
-    const outputFile = path.join(this.deployPath, this.type)
-    const cmd = `${pkg} --target ${target} --output ${outputFile} .`
-    await exec(cmd, options)
+    const config = path.join(__dirname, "..", "config.json")
+    const bin = this.packageJSON.bin
+    const bins = {}
+    if (typeof bin === "string") bins[this.type] = bin
+
+    if (!bins[this.type]) return Promise.reject(new Error('meshblu-connector-pkger requires "bin" entry in package.json'))
+
+    return Promise.map(Object.keys(bins), key => {
+      const outputFile = path.join(this.deployPath, key)
+      const file = bins[key]
+      const cmd = `${pkg} --config ${config} --target ${target} --output ${outputFile} ./${file}`
+      return exec(cmd, options)
+    })
   }
 }
 
