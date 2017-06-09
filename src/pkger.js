@@ -47,7 +47,7 @@ class MeshbluConnectorPkger {
     const options = {
       cwd: this.connectorPath,
     }
-    return exec(`yarn install --check-files --force`, options)
+    return exec(`yarn install --check-files --force --ignore-scripts; npm rebuild --arch=arm --target_arch=arm`, options)
   }
 
   build() {
