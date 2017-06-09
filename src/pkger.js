@@ -46,8 +46,9 @@ class MeshbluConnectorPkger {
     this.spinner.text = "Yarn-ing it up"
     const options = {
       cwd: this.connectorPath,
+      env: process.env,
     }
-    return exec(`yarn install --check-files --force --ignore-scripts; npm rebuild --arch=arm --target_arch=arm`, options)
+    return exec(`yarn install --check-files --force`, options)
   }
 
   build() {
@@ -55,6 +56,7 @@ class MeshbluConnectorPkger {
     this.spinner.text = "De-coffeeeeeing..."
     const options = {
       cwd: this.connectorPath,
+      env: process.env,
     }
     return exec(`yarn build || exit 0`, options)
   }
@@ -79,6 +81,7 @@ class MeshbluConnectorPkger {
     this.spinner.text = "Making that pkg"
     const options = {
       cwd: this.connectorPath,
+      env: process.env,
     }
     const pkg = path.join(__dirname, "../node_modules/.bin/pkg")
     const config = path.join(__dirname, "..", "config.json")
