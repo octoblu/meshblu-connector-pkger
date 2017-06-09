@@ -5,12 +5,24 @@ const exec = Promise.promisify(require("child_process").exec)
 const glob = Promise.promisify(require("glob"))
 
 class MeshbluConnectorPkger {
-  constructor({ connectorPath, spinner }) {
+  constructor({ target, connectorPath, spinner }) {
     this.packageJSON = fs.readJsonSync(path.join(connectorPath, "package.json"))
-    this.connectorPath = connectorPath
+    this.connectorPath = path.resolve(connectorPath)
+    this.target = target || this.getTarget()
     this.type = this.packageJSON.name
     this.spinner = spinner
-    this.deployPath = path.join(connectorPath, "deploy", "bin")
+    this.deployPath = path.join(this.connectorPath, "deploy", "bin")
+  }
+
+  getTarget() {
+    let { arch, platform } = process
+    if (platform === "darwin") platform = "macos"
+    if (platform === "win32") platform = "win"
+    if (arch === "ia32") arch = "x86"
+    if (arch === "arm") arch = "armv7"
+
+    const nodeVersion = "8"
+    return `node${nodeVersion}-${platform}-${arch}`
   }
 
   package() {
@@ -44,7 +56,7 @@ class MeshbluConnectorPkger {
     const options = {
       cwd: this.connectorPath,
     }
-    return exec(`yarn build`, options)
+    return exec(`yarn build || exit 0`, options)
   }
 
   copyToDeploy(file) {
@@ -68,14 +80,6 @@ class MeshbluConnectorPkger {
     const options = {
       cwd: this.connectorPath,
     }
-    let { arch, platform } = process
-    if (platform === "darwin") platform = "macos"
-    if (platform === "win32") platform = "win"
-    if (arch === "ia32") arch = "x86"
-    if (arch === "arm") arch = "armv7"
-
-    const nodeVersion = "8"
-    const target = `node${nodeVersion}-${platform}-${arch}`
     const pkg = path.join(__dirname, "../node_modules/.bin/pkg")
     const config = path.join(__dirname, "..", "config.json")
     const bin = this.packageJSON.bin
@@ -87,7 +91,7 @@ class MeshbluConnectorPkger {
     return Promise.map(Object.keys(bins), key => {
       const outputFile = path.join(this.deployPath, key)
       const file = bins[key]
-      const cmd = `${pkg} --config ${config} --target ${target} --output ${outputFile} ./${file}`
+      const cmd = `${pkg} --config ${config} --target ${this.target} --output ${outputFile} ./${file}`
       return exec(cmd, options)
     })
   }

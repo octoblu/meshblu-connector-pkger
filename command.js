@@ -24,6 +24,14 @@ const CLI_OPTIONS = [
     env: "MESHBLU_CONNECTOR_PATH",
     help: "Location of meshblu connector, defaults to current directory",
     helpArg: "PATH",
+    default: ".",
+  },
+  {
+    names: ["target"],
+    type: "string",
+    env: "MESHBLU_CONNECTOR_TARGET",
+    help: "platform target, will default to auto detect",
+    helpArg: "PATH",
   },
 ]
 
@@ -45,14 +53,8 @@ class MeshbluConnectorPkgerCommand {
       return {}
     }
 
-    if (!opts.connector_path) {
-      opts.connector_path = process.cwd()
-    }
-
-    opts.connector_path = path.resolve(opts.connector_path)
-
     if (opts.help) {
-      console.log(`usage: meshblu-connector-pkger [OPTIONS]\noptions:\n${this.parser.help({ includeEnv: true })}`)
+      console.log(`usage: meshblu-connector-pkger [OPTIONS]\noptions:\n${this.parser.help({ includeEnv: true, includeDefault: true })}`)
       process.exit(0)
     }
 
@@ -66,12 +68,12 @@ class MeshbluConnectorPkgerCommand {
 
   async run() {
     const options = this.parseArgv({ argv: this.argv })
-    const { connector_path } = options
+    const { connector_path, target } = options
     var errors = []
     if (!connector_path) errors.push(new Error("MeshbluConnectorCommand requires --connector-path or MESHBLU_CONNECTOR_PATH"))
 
     if (errors.length) {
-      console.log(`usage: meshblu-connector-pkg [OPTIONS]\noptions:\n${this.parser.help({ includeEnv: true })}`)
+      console.log(`usage: meshblu-connector-pkger [OPTIONS]\noptions:\n${this.parser.help({ includeEnv: true, includeDefault: true })}`)
       errors.forEach(error => {
         console.error(chalk.red(error.message))
       })
@@ -80,7 +82,7 @@ class MeshbluConnectorPkgerCommand {
 
     const spinner = ora("Pkg-ing connector").start()
 
-    const pkger = new MeshbluConnectorPkger({ connectorPath: connector_path, spinner })
+    const pkger = new MeshbluConnectorPkger({ connectorPath: connector_path, spinner, target })
     try {
       await pkger.package()
     } catch (error) {
