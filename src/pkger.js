@@ -7,7 +7,7 @@ const glob = Promise.promisify(require("glob"))
 class MeshbluConnectorPkger {
   constructor({ target, connectorPath, spinner }) {
     this.packageJSON = fs.readJsonSync(path.join(connectorPath, "package.json"))
-    this.connectorPath = path.resolve(connectorPath)
+    this.connectorPath = connectorPath
     this.target = target || this.getTarget()
     this.type = this.packageJSON.name
     this.spinner = spinner
@@ -84,18 +84,21 @@ class MeshbluConnectorPkger {
       env: process.env,
     }
     const pkg = path.join(__dirname, "../node_modules/.bin/pkg")
-    const config = path.join(__dirname, "..", "config.json")
+    const srcConfig = path.join(__dirname, "..", "config.json")
+    const destConfig = path.join(this.connectorPath, "pkg-config.json")
     const bin = this.packageJSON.bin
     const bins = {}
     if (typeof bin === "string") bins[this.type] = bin
 
     if (!bins[this.type]) return Promise.reject(new Error('meshblu-connector-pkger requires "bin" entry in package.json'))
 
-    return Promise.map(Object.keys(bins), key => {
-      const outputFile = path.join(this.deployPath, key)
-      const file = bins[key]
-      const cmd = `${pkg} --config ${config} --target ${this.target} --output ${outputFile} ./${file}`
-      return exec(cmd, options)
+    return fs.copy(srcConfig, destConfig).then(() => {
+      return Promise.map(Object.keys(bins), key => {
+        const outputFile = path.join(this.deployPath, key)
+        const file = bins[key]
+        const cmd = `${pkg} --config ${destConfig} --target ${this.target} --output ${outputFile} ./${file}`
+        return exec(cmd, options)
+      })
     })
   }
 }

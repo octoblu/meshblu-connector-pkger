@@ -82,7 +82,7 @@ class MeshbluConnectorPkgerCommand {
 
     const spinner = ora("Pkg-ing connector").start()
 
-    const pkger = new MeshbluConnectorPkger({ connectorPath: connector_path, spinner, target })
+    const pkger = new MeshbluConnectorPkger({ connectorPath: path.resolve(connector_path), spinner, target })
     try {
       await pkger.package()
     } catch (error) {
