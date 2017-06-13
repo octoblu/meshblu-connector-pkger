@@ -25,6 +25,11 @@ class MeshbluConnectorPkger {
     return `node${nodeVersion}-${platform}-${arch}`
   }
 
+  getExtension() {
+    if (process.platform === "win32") return ".exe"
+    return ""
+  }
+
   package() {
     return this.yarn()
       .then(() => {
@@ -94,7 +99,7 @@ class MeshbluConnectorPkger {
 
     return fs.copy(srcConfig, destConfig).then(() => {
       return Promise.map(Object.keys(bins), key => {
-        const outputFile = path.join(this.deployPath, key)
+        const outputFile = path.join(this.deployPath, key + this.getExtension())
         const file = bins[key]
         const cmd = `${pkg} --config ${destConfig} --target ${this.target} --output ${outputFile} ./${file}`
         return exec(cmd, options)
