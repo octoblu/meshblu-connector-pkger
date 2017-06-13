@@ -3,7 +3,7 @@
     "scripts": [
       "package.json",
       "index.js",
-      "src/*.js",
+      "lib/**/*.js",
       "jobs/**/*.js",
       "configs/**/*.js",
       "node_modules/meshblu-connector-schema-generator/dist/*.js",
