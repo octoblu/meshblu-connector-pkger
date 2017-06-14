@@ -104,7 +104,7 @@ class MeshbluConnectorPkger {
     if (!bins[this.type]) return Promise.reject(new Error(`meshblu-connector-pkger requires "bin" entry in package.json for ${this.type}`))
 
     return this.copyPkgConfig({ srcConfig, destConfig }).then(() => {
-      return Promise.map(Object.keys(bins), key => {
+      return Promise.each(Object.keys(bins), key => {
         const outputFile = path.join(this.deployPath, key + this.getExtension())
         const file = path.resolve(bins[key])
         const cmd = `${pkg} --config ${destConfig} --target ${this.target} --output ${outputFile} ${file}`
