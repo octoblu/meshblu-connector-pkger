@@ -110,8 +110,8 @@ class MeshbluConnectorPkger {
     return this.copyPkgConfig({ srcConfig, destConfig }).then(() => {
       return Promise.map(Object.keys(bins), key => {
         const outputFile = path.join(this.deployPath, key + this.getExtension())
-        const file = bins[key]
-        const cmd = `${pkg} --config ${destConfig} --target ${this.target} --output ${outputFile} ./${file}`
+        const file = path.resolve(bins[key])
+        const cmd = `${pkg} --config ${destConfig} --target ${this.target} --output ${outputFile} ${file}`
         return this.exec(cmd, options)
       })
     })
