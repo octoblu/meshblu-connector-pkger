@@ -90,10 +90,6 @@ class MeshbluConnectorPkger {
   pkg() {
     this.spinner.color = "green"
     this.spinner.text = "Making that pkg"
-    const options = {
-      cwd: this.connectorPath,
-      env: process.env,
-    }
     const pkg = path.join(__dirname, "../node_modules/.bin/pkg")
     const srcConfig = path.join(__dirname, "..", "config.json")
     const destConfig = path.join(this.connectorPath, "pkg-config.json")
@@ -112,6 +108,13 @@ class MeshbluConnectorPkger {
         const outputFile = path.join(this.deployPath, key + this.getExtension())
         const file = path.resolve(bins[key])
         const cmd = `${pkg} --config ${destConfig} --target ${this.target} --output ${outputFile} ${file}`
+        const options = {
+          cwd: this.connectorPath,
+          env: {
+            PATH: process.env.PATH,
+            HOME: process.env.HOME,
+          },
+        }
         return this.exec(cmd, options)
       })
     })
