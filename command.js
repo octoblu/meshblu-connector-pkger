@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 const dashdash = require("dashdash")
 const path = require("path")
-const util = require("util")
-const fs = require("fs")
 const chalk = require("chalk")
 const ora = require("ora")
 const { MeshbluConnectorPkger } = require("./src/pkger")
@@ -66,7 +64,7 @@ class MeshbluConnectorPkgerCommand {
     return opts
   }
 
-  async run() {
+  run() {
     const options = this.parseArgv({ argv: this.argv })
     const { connector_path, target } = options
     var errors = []
@@ -77,20 +75,16 @@ class MeshbluConnectorPkgerCommand {
       errors.forEach(error => {
         console.error(chalk.red(error.message))
       })
-      process.exit(1)
+      return Promise.reject()
     }
 
     const spinner = ora("Pkg-ing connector").start()
 
     const pkger = new MeshbluConnectorPkger({ connectorPath: path.resolve(connector_path), spinner, target })
-    try {
-      await pkger.package()
-    } catch (error) {
-      if (error.stdout) console.error(error.stdout)
-      if (error.stderr) console.error(error.stderr)
-      return spinner.fail(error.message)
-    }
-    spinner.succeed("Ship it!")
+    return pkger.package().then(() => spinner.succeed("Ship it!")).catch(error => {
+      spinner.fail(error.message)
+      return Promise.reject(error)
+    })
   }
 
   die(error) {
@@ -100,6 +94,16 @@ class MeshbluConnectorPkgerCommand {
 }
 
 const command = new MeshbluConnectorPkgerCommand({ argv: process.argv })
-command.run().catch(error => {
-  console.error(error)
-})
+command
+  .run()
+  .then(() => {
+    process.exit(0)
+  })
+  .catch(error => {
+    if (error) {
+      if (error.stdout) console.error(error.stdout)
+      if (error.stderr) console.error(error.stderr)
+      console.error(error)
+    }
+    process.exit(1)
+  })
