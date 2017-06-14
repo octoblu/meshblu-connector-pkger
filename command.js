@@ -86,9 +86,9 @@ class MeshbluConnectorPkgerCommand {
     try {
       await pkger.package()
     } catch (error) {
-      return spinner.fail(error.message)
       if (error.stdout) console.error(error.stdout)
       if (error.stderr) console.error(error.stderr)
+      return spinner.fail(error.message)
     }
     spinner.succeed("Ship it!")
   }
