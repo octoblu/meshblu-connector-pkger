@@ -1,7 +1,7 @@
 const fs = require("fs-extra")
 const path = require("path")
 const Promise = require("bluebird")
-const exec = Promise.promisify(require("child_process").exec)
+const exec = require("child_process").exec
 const glob = Promise.promisify(require("glob"))
 
 class MeshbluConnectorPkger {
@@ -11,7 +11,20 @@ class MeshbluConnectorPkger {
     this.target = target || this.getTarget()
     this.type = this.packageJSON.name
     this.spinner = spinner
-    this.deployPath = path.join(this.connectorPath, "deploy", "bin")
+    this.deployPath = path.join(this.connectorPath, "deploy", this.target, "bin")
+  }
+
+  exec(cmd, options) {
+    return new Promise((resolve, reject) => {
+      exec(cmd, options, (error, stdout, stderr) => {
+        if (error) {
+          error.stdout = stdout
+          error.stderr = stderr
+          return reject(error)
+        }
+        return resolve(stdout, stderr)
+      })
+    })
   }
 
   getTarget() {
@@ -30,20 +43,12 @@ class MeshbluConnectorPkger {
     return ""
   }
 
+  ensurePath() {
+    return fs.ensureDir(this.deployPath)
+  }
+
   package() {
-    return this.yarn()
-      .then(() => {
-        return fs.mkdirp(this.deployPath)
-      })
-      .then(() => {
-        return this.dotnode()
-      })
-      .then(() => {
-        return this.build()
-      })
-      .then(() => {
-        return this.pkg()
-      })
+    return this.yarn().then(() => this.ensurePath()).then(() => this.dotnode()).then(() => this.build()).then(() => this.pkg())
   }
 
   yarn() {
@@ -53,17 +58,17 @@ class MeshbluConnectorPkger {
       cwd: this.connectorPath,
       env: process.env,
     }
-    return exec(`yarn install --check-files --force`, options)
+    return this.exec("yarn install --check-files --force", options)
   }
 
   build() {
     this.spinner.color = "green"
-    this.spinner.text = "De-coffeeeeeing..."
+    this.spinner.text = "Building..."
     const options = {
       cwd: this.connectorPath,
       env: process.env,
     }
-    return exec(`yarn build || exit 0`, options)
+    return this.exec("yarn build || exit 0", options)
   }
 
   copyToDeploy(file) {
@@ -92,17 +97,21 @@ class MeshbluConnectorPkger {
     const srcConfig = path.join(__dirname, "..", "config.json")
     const destConfig = path.join(this.connectorPath, "pkg-config.json")
     const bin = this.packageJSON.bin
-    const bins = {}
-    if (typeof bin === "string") bins[this.type] = bin
+    let bins = {}
+    if (typeof bin === "string") {
+      bins[this.type] = bin
+    } else {
+      bins = bin
+    }
 
-    if (!bins[this.type]) return Promise.reject(new Error('meshblu-connector-pkger requires "bin" entry in package.json'))
+    if (!bins[this.type]) return Promise.reject(new Error(`meshblu-connector-pkger requires "bin" entry in package.json for ${this.type}`))
 
     return fs.copy(srcConfig, destConfig).then(() => {
       return Promise.map(Object.keys(bins), key => {
         const outputFile = path.join(this.deployPath, key + this.getExtension())
         const file = bins[key]
         const cmd = `${pkg} --config ${destConfig} --target ${this.target} --output ${outputFile} ./${file}`
-        return exec(cmd, options)
+        return this.exec(cmd, options)
       })
     })
   }
