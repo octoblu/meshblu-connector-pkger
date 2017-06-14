@@ -3,6 +3,7 @@ const path = require("path")
 const Promise = require("bluebird")
 const exec = require("child_process").exec
 const glob = Promise.promisify(require("glob"))
+const defaultsDeep = require("lodash.defaultsdeep")
 
 class MeshbluConnectorPkger {
   constructor({ target, connectorPath, spinner }) {
@@ -106,7 +107,7 @@ class MeshbluConnectorPkger {
 
     if (!bins[this.type]) return Promise.reject(new Error(`meshblu-connector-pkger requires "bin" entry in package.json for ${this.type}`))
 
-    return fs.copy(srcConfig, destConfig).then(() => {
+    return this.copyPkgConfig({ srcConfig, destConfig }).then(() => {
       return Promise.map(Object.keys(bins), key => {
         const outputFile = path.join(this.deployPath, key + this.getExtension())
         const file = bins[key]
@@ -114,6 +115,13 @@ class MeshbluConnectorPkger {
         return this.exec(cmd, options)
       })
     })
+  }
+
+  copyPkgConfig({ srcConfig, destConfig }) {
+    const pkgOptions = this.packageJSON.pkg
+    const srcOptions = fs.readJsonSync(srcConfig).pkg
+    const data = defaultsDeep(pkgOptions, srcOptions)
+    return fs.writeJson(destConfig, { pkg: data })
   }
 }
 
