@@ -17,7 +17,7 @@ class MeshbluConnectorPkger {
 
   exec(cmd, options) {
     options = options || {}
-    if (process.platform == "linux" && process.arch === "arm") options.shell = "/bin/bash"
+    if (process.platform === "linux" && process.arch === "arm") options.shell = "/bin/bash"
     return new Promise((resolve, reject) => {
       exec(cmd, options, (error, stdout, stderr) => {
         if (error) {
