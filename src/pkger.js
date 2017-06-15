@@ -112,10 +112,7 @@ class MeshbluConnectorPkger {
         const cmd = `${pkg} --config ${destConfig} --target ${this.target} --output ${outputFile} ${file}`
         const options = {
           cwd: this.connectorPath,
-          env: {
-            PATH: process.env.PATH,
-            HOME: process.env.HOME,
-          },
+          env: process.env,
         }
         return this.exec(cmd, options)
       })
