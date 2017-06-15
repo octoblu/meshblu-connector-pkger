@@ -20,7 +20,11 @@ class MeshbluConnectorPkger {
     options = options || {}
     if (process.platform === "linux" && process.arch === "arm") options.shell = "/bin/bash"
     return new Promise((resolve, reject) => {
+      let interval = setInterval(function() {
+        debug("still processing...")
+      }, 30 * 1000)
       exec(cmd, options, (error, stdout, stderr) => {
+        clearInterval(interval)
         if (error) {
           error.stdout = stdout
           error.stderr = stderr
