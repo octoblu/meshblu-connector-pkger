@@ -4,6 +4,7 @@ const Promise = require("bluebird")
 const exec = require("child_process").exec
 const glob = Promise.promisify(require("glob"))
 const defaultsDeep = require("lodash.defaultsdeep")
+const debug = require("debug")("meshblu-connector-pkger")
 
 class MeshbluConnectorPkger {
   constructor({ target, connectorPath, spinner }) {
@@ -57,6 +58,7 @@ class MeshbluConnectorPkger {
   yarn() {
     this.spinner.color = "blue"
     this.spinner.text = "Yarn-ing it up"
+    debug("yarn it up")
     const options = {
       cwd: this.connectorPath,
       env: process.env,
@@ -67,6 +69,7 @@ class MeshbluConnectorPkger {
   build() {
     this.spinner.color = "green"
     this.spinner.text = "Building..."
+    debug("runing yarn build")
     const options = {
       cwd: this.connectorPath,
       env: process.env,
@@ -83,8 +86,10 @@ class MeshbluConnectorPkger {
   dotnode() {
     this.spinner.color = "blue"
     this.spinner.text = "Finding those pesky .node files"
+    debug("finding those pesky .node files")
     const nodeModulesPath = path.join(this.connectorPath, "node_modules")
     return glob(`${nodeModulesPath}/**/Release/*.node`, { nodir: true }).map(file => {
+      debug("found .node file", { file })
       return this.copyToDeploy(file)
     })
   }
@@ -92,6 +97,7 @@ class MeshbluConnectorPkger {
   pkg() {
     this.spinner.color = "green"
     this.spinner.text = "Making that pkg"
+    debug("making pkg")
     const pkg = path.join(__dirname, "../node_modules/.bin/pkg")
     const srcConfig = path.join(__dirname, "..", "config.json")
     const destConfig = path.join(this.connectorPath, "pkg-config.json")
