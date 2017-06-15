@@ -73,7 +73,7 @@ class MeshbluConnectorPkger {
   build() {
     this.spinner.color = "green"
     this.spinner.text = "Building..."
-    debug("runing yarn build")
+    debug("running yarn build")
     const options = {
       cwd: this.connectorPath,
       env: process.env,
