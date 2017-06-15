@@ -56,7 +56,7 @@ class MeshbluConnectorPkger {
   }
 
   package() {
-    return this.yarn().then(() => this.ensurePath()).then(() => this.dotnode()).then(() => this.build()).then(() => this.pkg())
+    return this.yarn().then(() => this.ensurePath()).then(() => this.build()).then(() => this.dotnode()).then(() => this.pkg())
   }
 
   yarn() {
