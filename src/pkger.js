@@ -78,7 +78,11 @@ class MeshbluConnectorPkger {
       cwd: this.connectorPath,
       env: process.env,
     }
-    return this.exec("yarn build || exit 0", options)
+    if (this.packageJSON.scripts.build == null) {
+      debug("package.json is missing build script, skipping...")
+      return Promise.resolve()
+    }
+    return this.exec("yarn build", options)
   }
 
   copyToDeploy(file) {
