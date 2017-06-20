@@ -1,6 +1,6 @@
 {
   "name": "meshblu-connector-pkger",
-  "version": "1.4.14",
+  "version": "1.5.0",
   "description": "Create binaries from meshblu-connectors using pkg",
   "main": "src/pkger.js",
   "bin": {

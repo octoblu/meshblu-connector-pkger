@@ -31,6 +31,14 @@ const CLI_OPTIONS = [
     help: "platform target, will default to auto detect",
     helpArg: "PATH",
   },
+  {
+    names: ["node-version"],
+    type: "string",
+    env: "MESHBLU_CONNECTOR_NODE_VERSION",
+    help: "Node version to compile in",
+    helpArg: "VERSION",
+    default: "8",
+  },
 ]
 
 class MeshbluConnectorPkgerCommand {
@@ -66,7 +74,7 @@ class MeshbluConnectorPkgerCommand {
 
   run() {
     const options = this.parseArgv({ argv: this.argv })
-    const { connector_path, target } = options
+    const { connector_path, target, node_version } = options
     var errors = []
     if (!connector_path) errors.push(new Error("MeshbluConnectorCommand requires --connector-path or MESHBLU_CONNECTOR_PATH"))
 
@@ -80,7 +88,7 @@ class MeshbluConnectorPkgerCommand {
 
     const spinner = ora("Pkg-ing connector").start()
 
-    const pkger = new MeshbluConnectorPkger({ connectorPath: path.resolve(connector_path), spinner, target })
+    const pkger = new MeshbluConnectorPkger({ connectorPath: path.resolve(connector_path), nodeVersion: node_version, spinner, target })
     return pkger.package().then(() => spinner.succeed("Ship it!")).catch(error => {
       spinner.fail(error.message)
       return Promise.reject(error)

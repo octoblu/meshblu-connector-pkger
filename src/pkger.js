@@ -7,7 +7,8 @@ const defaultsDeep = require("lodash.defaultsdeep")
 const debug = require("debug")("meshblu-connector-pkger")
 
 class MeshbluConnectorPkger {
-  constructor({ target, connectorPath, spinner }) {
+  constructor({ target, connectorPath, spinner, nodeVersion }) {
+    this.nodeVersion = nodeVersion
     this.packageJSON = fs.readJsonSync(path.join(connectorPath, "package.json"))
     this.connectorPath = connectorPath
     this.target = target || this.getTarget()
@@ -42,8 +43,7 @@ class MeshbluConnectorPkger {
     if (arch === "ia32") arch = "x86"
     if (arch === "arm") arch = "armv7"
 
-    const nodeVersion = "8"
-    return `node${nodeVersion}-${platform}-${arch}`
+    return `node${this.nodeVersion}-${platform}-${arch}`
   }
 
   getExtension() {
