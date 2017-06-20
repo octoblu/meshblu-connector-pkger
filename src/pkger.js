@@ -57,7 +57,13 @@ class MeshbluConnectorPkger {
   }
 
   package() {
-    return this.yarn().then(() => this.ensurePath()).then(() => this.build()).then(() => this.dotnode()).then(() => this.pkg()).then(() => this.afterBuild())
+    return this.yarn()
+      .then(() => this.ensurePath())
+      .then(() => this.build())
+      .then(() => this.dotnode())
+      .then(() => this.pkg())
+      .then(() => this.afterBuild())
+      .then(() => this.dotenv())
   }
 
   yarn() {
@@ -99,6 +105,18 @@ class MeshbluConnectorPkger {
       return Promise.resolve()
     }
     return this.exec("yarn build:after", options)
+  }
+
+  dotenv() {
+    this.spinner.color = "green"
+    this.spinner.text = "Copying .env..."
+    debug("copy _env to bin/.env")
+    const source = path.resolve("./_env")
+    const dest = path.join(this.deployPath, ".env")
+    return fs.pathExists(source).then(exists => {
+      if (!exists) return Promise.resolve()
+      return fs.copy(source, dest)
+    })
   }
 
   copyToDeploy(file) {
