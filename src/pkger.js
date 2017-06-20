@@ -12,6 +12,7 @@ class MeshbluConnectorPkger {
     this.packageJSON = fs.readJsonSync(path.join(connectorPath, "package.json"))
     this.connectorPath = connectorPath
     this.target = target || this.getTarget()
+    process.env.MESHBLU_CONNECTOR_TARGET = this.target
     this.type = this.packageJSON.name
     this.spinner = spinner
     this.deployPath = path.join(this.connectorPath, "deploy", this.target, "bin")
@@ -56,7 +57,7 @@ class MeshbluConnectorPkger {
   }
 
   package() {
-    return this.yarn().then(() => this.ensurePath()).then(() => this.build()).then(() => this.dotnode()).then(() => this.pkg())
+    return this.yarn().then(() => this.ensurePath()).then(() => this.build()).then(() => this.dotnode()).then(() => this.pkg()).then(() => this.afterBuild())
   }
 
   yarn() {
@@ -83,6 +84,21 @@ class MeshbluConnectorPkger {
       return Promise.resolve()
     }
     return this.exec("yarn build", options)
+  }
+
+  afterBuild() {
+    this.spinner.color = "green"
+    this.spinner.text = "After Building..."
+    debug("running yarn build:after")
+    const options = {
+      cwd: this.connectorPath,
+      env: process.env,
+    }
+    if (this.packageJSON.scripts["build:after"] == null) {
+      debug("package.json is missing build:after script, skipping...")
+      return Promise.resolve()
+    }
+    return this.exec("yarn build:after", options)
   }
 
   copyToDeploy(file) {
@@ -135,9 +151,9 @@ class MeshbluConnectorPkger {
 
   copyPkgConfig({ srcConfig, destConfig }) {
     const pkgOptions = this.packageJSON.pkg
-    const srcOptions = fs.readJsonSync(srcConfig).pkg
+    const srcOptions = fs.readJsonSync(srcConfig)
     const data = defaultsDeep(pkgOptions, srcOptions)
-    return fs.writeJson(destConfig, { pkg: data })
+    return fs.writeJson(destConfig, data, { spaces: 2 })
   }
 }
 
