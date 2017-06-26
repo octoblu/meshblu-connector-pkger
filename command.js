@@ -21,8 +21,7 @@ const CLI_OPTIONS = [
     type: "string",
     env: "MESHBLU_CONNECTOR_TARGET",
     help: "platform target, will default to auto detect",
-    helpArg: "PATH",
-    completionType: "file",
+    helpArg: "TARGET",
   },
   {
     names: ["node-version"],
@@ -51,7 +50,7 @@ class MeshbluConnectorPkgerCommand {
     const pkger = new MeshbluConnectorPkger({ connectorPath: path.resolve(connectorPath), nodeVersion, spinner, target })
     return pkger.package().then(() => spinner.succeed("Ship it!")).catch(error => {
       spinner.fail(error.message)
-      return Promise.reject(error)
+      throw error
     })
   }
 }
