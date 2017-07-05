@@ -1,7 +1,7 @@
 const fs = require("fs-extra")
 const path = require("path")
 const Promise = require("bluebird")
-const exec = require("child_process").exec
+const { exec } = require("child_process")
 const glob = Promise.promisify(require("glob"))
 const defaultsDeep = require("lodash.defaultsdeep")
 const debug = require("debug")("meshblu-connector-pkger")
@@ -26,13 +26,15 @@ class MeshbluConnectorPkger {
         debug("still processing...")
       }, 30 * 1000)
       exec(cmd, options, (error, stdout, stderr) => {
+        debug("stdout:", stdout)
+        debug("stderr:", stderr)
         clearInterval(interval)
         if (error) {
           error.stdout = stdout
           error.stderr = stderr
           return reject(error)
         }
-        return resolve(stdout, stderr)
+        return resolve()
       })
     })
   }
