@@ -2,6 +2,7 @@ const fs = require("fs-extra")
 const path = require("path")
 const Promise = require("bluebird")
 const { exec } = require("child_process")
+const pkgExec = require("pkg").exec
 const glob = Promise.promisify(require("glob"))
 const defaultsDeep = require("lodash.defaultsdeep")
 const debug = require("debug")("meshblu-connector-pkger")
@@ -142,7 +143,6 @@ class MeshbluConnectorPkger {
     this.spinner.color = "green"
     this.spinner.text = "Making that pkg"
     debug("making pkg")
-    const pkg = path.join(__dirname, "../node_modules/.bin/pkg")
     const srcConfig = path.join(__dirname, "..", "config.json")
     const destConfig = path.join(this.connectorPath, "pkg-config.json")
     const bin = this.packageJSON.bin
@@ -159,12 +159,8 @@ class MeshbluConnectorPkger {
       return Promise.each(Object.keys(bins), key => {
         const outputFile = path.join(this.deployPath, key + this.getExtension())
         const file = path.resolve(bins[key])
-        const cmd = `${pkg} --config ${destConfig} --target ${this.target} --output ${outputFile} ${file}`
-        const options = {
-          cwd: this.connectorPath,
-          env: process.env,
-        }
-        return this.exec(cmd, options)
+        const args = ["--config", destConfig, "--target", this.target, "--output", outputFile, file]
+        return pkgExec(args)
       })
     })
   }
