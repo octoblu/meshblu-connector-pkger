@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-acorn@5.0.3:
-  version "5.0.3"
-  resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.0.3.tgz#c460df08491463f028ccb82eab3730bf01087b3d"
+acorn@5.1.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.1.1.tgz#53fe161111f912ab999ee887a90a0bc52822fd75"
 
 ajv@^4.9.1:
   version "4.11.8"
@@ -65,9 +65,9 @@ aws4@^1.2.1:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.6.0.tgz#83ef5ca860b2b32e4a0deedee8c771b9db57471e"
 
-babel-runtime@6.23.0:
-  version "6.23.0"
-  resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.23.0.tgz#0a9489f144de70efb3ce4300accdb329e2fc543b"
+babel-runtime@6.25.0:
+  version "6.25.0"
+  resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.25.0.tgz#33b98eaa5d482bb01a8d1aa6b437ad2b01aec41c"
   dependencies:
     core-js "^2.4.0"
     regenerator-runtime "^0.10.0"
@@ -107,7 +107,15 @@ caseless@~0.12.0:
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
 
-chalk@1.1.3, chalk@^1.0.0, chalk@^1.1.1, chalk@^1.1.3:
+chalk@2.1.0, chalk@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.1.0.tgz#ac5becf14fa21b99c6c92ca7a7d7cfd5b17e743e"
+  dependencies:
+    ansi-styles "^3.1.0"
+    escape-string-regexp "^1.0.5"
+    supports-color "^4.0.0"
+
+chalk@^1.0.0, chalk@^1.1.1, chalk@^1.1.3:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-1.1.3.tgz#a8115c55e4a702fe4d150abd3872822a7e09fc98"
   dependencies:
@@ -116,14 +124,6 @@ chalk@1.1.3, chalk@^1.0.0, chalk@^1.1.1, chalk@^1.1.3:
     has-ansi "^2.0.0"
     strip-ansi "^3.0.0"
     supports-color "^2.0.0"
-
-chalk@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.0.1.tgz#dbec49436d2ae15f536114e76d14656cdbc0f44d"
-  dependencies:
-    ansi-styles "^3.1.0"
-    escape-string-regexp "^1.0.5"
-    supports-color "^4.0.0"
 
 cli-cursor@^2.1.0:
   version "2.1.0"
@@ -182,6 +182,12 @@ dashdash@^1.12.0, dashdash@^1.14.1:
 debug@^2.6.8:
   version "2.6.8"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.8.tgz#e731531ca2ede27d188222427da17821d68ff4fc"
+  dependencies:
+    ms "2.0.0"
+
+debug@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-3.0.1.tgz#0564c612b521dc92d9f2988f0549e34f9c98db64"
   dependencies:
     ms "2.0.0"
 
@@ -262,15 +268,7 @@ form-data@~2.1.1:
     combined-stream "^1.0.5"
     mime-types "^2.1.12"
 
-fs-extra@3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-3.0.1.tgz#3794f378c58b342ea7dbbb23095109c4b3b62291"
-  dependencies:
-    graceful-fs "^4.1.2"
-    jsonfile "^3.0.0"
-    universalify "^0.1.0"
-
-fs-extra@^4.0.1:
+fs-extra@4.0.1, fs-extra@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-4.0.1.tgz#7fc0c6c8957f983f57f306a24e5b9ddd8d0dd880"
   dependencies:
@@ -507,9 +505,9 @@ object-assign@^4.0.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
 
-octodash@^1.3.1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/octodash/-/octodash-1.3.1.tgz#0ad60c2690f79616f691e814f0caa3688956aec2"
+octodash@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/octodash/-/octodash-1.4.0.tgz#a313e6587554c71a686b8e6d4697b6e194fe2bd7"
   dependencies:
     chalk "^1.1.3"
     dashdash "^1.14.1"
@@ -583,39 +581,39 @@ pinkie@^2.0.0:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
 
-pkg-fetch@2.3.5:
-  version "2.3.5"
-  resolved "https://registry.yarnpkg.com/pkg-fetch/-/pkg-fetch-2.3.5.tgz#be293027a7bb13d966f2286eb568022213e6f41c"
+pkg-fetch@2.3.10:
+  version "2.3.10"
+  resolved "https://registry.yarnpkg.com/pkg-fetch/-/pkg-fetch-2.3.10.tgz#1e81123c0c3b01731347e71afae3e05b1b4bc998"
   dependencies:
-    babel-runtime "6.23.0"
+    babel-runtime "6.25.0"
     byline "5.0.0"
-    chalk "1.1.3"
+    chalk "2.1.0"
     expand-template "1.0.3"
-    fs-extra "3.0.1"
+    fs-extra "4.0.1"
     in-publish "2.0.0"
     minimist "1.2.0"
     progress "2.0.0"
     request "2.81.0"
     request-progress "3.0.0"
-    semver "5.3.0"
+    semver "5.4.1"
     unique-temp-dir "1.0.0"
 
-pkg@4.1.2:
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/pkg/-/pkg-4.1.2.tgz#9f587929bdc53f59550ea02a48869bf5e1feaf7d"
+pkg@^4.2.4:
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/pkg/-/pkg-4.2.4.tgz#7781490f9339a8f5cc8eea737e94c37c4e8ed4c8"
   dependencies:
-    acorn "5.0.3"
-    babel-runtime "6.23.0"
-    chalk "1.1.3"
+    acorn "5.1.1"
+    babel-runtime "6.25.0"
+    chalk "2.1.0"
     escodegen "1.8.1"
-    fs-extra "3.0.1"
+    fs-extra "4.0.1"
     globby "6.1.0"
     in-publish "2.0.0"
     minimist "1.2.0"
     multistream "2.1.0"
-    pkg-fetch "2.3.5"
+    pkg-fetch "2.3.10"
     progress "2.0.0"
-    resolve "1.3.3"
+    resolve "1.4.0"
     simple-bufferstream "1.0.0"
     stream-meter "1.0.4"
 
@@ -688,9 +686,9 @@ request@2.81.0:
     tunnel-agent "^0.6.0"
     uuid "^3.0.0"
 
-resolve@1.3.3:
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.3.3.tgz#655907c3469a8680dc2de3a275a8fdd69691f0e5"
+resolve@1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.4.0.tgz#a75be01c53da25d934a98ebd0e4c4a7312f92a86"
   dependencies:
     path-parse "^1.0.5"
 
@@ -705,9 +703,9 @@ safe-buffer@^5.0.1:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.0.tgz#fe4c8460397f9eaaaa58e73be46273408a45e223"
 
-semver@5.3.0:
-  version "5.3.0"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-5.3.0.tgz#9b2ce5d3de02d17c6012ad326aa6b4d0cf54f94f"
+semver@5.4.1:
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-5.4.1.tgz#e059c09d8571f0540823733433505d3a2f00b18e"
 
 signal-exit@^3.0.2:
   version "3.0.2"

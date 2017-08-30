@@ -29,7 +29,7 @@ const CLI_OPTIONS = [
     env: "MESHBLU_CONNECTOR_NODE_VERSION",
     help: "Node version to compile in",
     helpArg: "VERSION",
-    default: "8",
+    default: "8.3",
   },
 ]
 
