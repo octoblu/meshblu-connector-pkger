@@ -1,10 +1,12 @@
 {
   "name": "meshblu-connector-pkger",
-  "version": "1.7.7",
+  "version": "1.8.0",
   "description": "Create binaries from meshblu-connectors using pkg",
   "main": "src/pkger.js",
   "bin": {
-    "meshblu-connector-pkger": "./command.js"
+    "meshblu-connector-pkger": "./command.js",
+    "meshblu-connector-pkg": "./node_modules/.bin/pkg",
+    "meshblu-connector-pkg-fetch": "./node_modules/.bin/pkg-fetch"
   },
   "scripts": {
     "test": "exit 0"

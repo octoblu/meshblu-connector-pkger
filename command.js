@@ -31,6 +31,16 @@ const CLI_OPTIONS = [
     helpArg: "VERSION",
     default: "8.3",
   },
+  {
+    names: ["pkg-fetch-version"],
+    type: "bool",
+    help: "Get pkg-fetch version",
+  },
+  {
+    names: ["pkg-version"],
+    type: "bool",
+    help: "Get pkg version",
+  },
 ]
 
 class MeshbluConnectorPkgerCommand {
@@ -44,6 +54,14 @@ class MeshbluConnectorPkgerCommand {
   }
   run() {
     const options = this.octoDash.parseOptions()
+    if(options.pkgFetchVersion) {
+      console.log(require('pkg-fetch/package.json').version)
+      return Promise.resolve()
+    }
+    if(options.pkgVersion) {
+      console.log(require('pkg/package.json').version)
+      return Promise.resolve()
+    }
     const { connectorPath, target, nodeVersion } = options
     const spinner = ora("Pkg-ing connector").start()
 
