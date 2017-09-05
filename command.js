@@ -29,7 +29,7 @@ const CLI_OPTIONS = [
     env: "MESHBLU_CONNECTOR_NODE_VERSION",
     help: "Node version to compile in",
     helpArg: "VERSION",
-    default: "8.3",
+    default: "8",
   },
   {
     names: ["pkg-fetch-version"],
@@ -54,22 +54,30 @@ class MeshbluConnectorPkgerCommand {
   }
   run() {
     const options = this.octoDash.parseOptions()
-    if(options.pkgFetchVersion) {
-      console.log(require('pkg-fetch/package.json').version)
+    if (options.pkgFetchVersion) {
+      console.log(require("pkg-fetch/package.json").version)
       return Promise.resolve()
     }
-    if(options.pkgVersion) {
-      console.log(require('pkg/package.json').version)
+    if (options.pkgVersion) {
+      console.log(require("pkg/package.json").version)
       return Promise.resolve()
     }
     const { connectorPath, target, nodeVersion } = options
     const spinner = ora("Pkg-ing connector").start()
 
-    const pkger = new MeshbluConnectorPkger({ connectorPath: path.resolve(connectorPath), nodeVersion, spinner, target })
-    return pkger.package().then(() => spinner.succeed("Ship it!")).catch(error => {
-      spinner.fail(error.message)
-      throw error
+    const pkger = new MeshbluConnectorPkger({
+      connectorPath: path.resolve(connectorPath),
+      nodeVersion,
+      spinner,
+      target,
     })
+    return pkger
+      .package()
+      .then(() => spinner.succeed("Ship it!"))
+      .catch(error => {
+        spinner.fail(error.message)
+        throw error
+      })
   }
 }
 
