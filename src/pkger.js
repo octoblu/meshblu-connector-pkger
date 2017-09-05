@@ -133,7 +133,9 @@ class MeshbluConnectorPkger {
     this.spinner.text = "Finding those pesky .node files"
     debug("finding those pesky .node files")
     const nodeModulesPath = path.join(this.connectorPath, "node_modules")
-    return glob(`${nodeModulesPath}/**/Release/*.node`, { nodir: true }).map(file => {
+    return glob(`${nodeModulesPath}/**/Release/*.node`, {
+      nodir: true,
+    }).map(file => {
       debug("found .node file", { file })
       return this.copyToDeploy(file)
     })
@@ -153,13 +155,17 @@ class MeshbluConnectorPkger {
       bins = bin
     }
 
-    if (!bins[this.type]) return Promise.reject(new Error(`meshblu-connector-pkger requires "bin" entry in package.json for ${this.type}`))
+    if (!bins[this.type])
+      return Promise.reject(new Error(`meshblu-connector-pkger requires "bin" entry in package.json for ${this.type}`))
 
     return this.copyPkgConfig({ srcConfig, destConfig }).then(() => {
       return Promise.each(Object.keys(bins), key => {
         const outputFile = path.join(this.deployPath, key + this.getExtension())
         const file = path.resolve(bins[key])
         const args = ["--config", destConfig, "--target", this.target, "--output", outputFile, file]
+        if (require("debug")("pkg").enabled) {
+          args.unshift("--debug")
+        }
         return pkgExec(args)
       })
     })
