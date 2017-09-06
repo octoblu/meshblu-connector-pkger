@@ -24,6 +24,14 @@ const CLI_OPTIONS = [
     helpArg: "TARGET",
   },
   {
+    names: ["max-old-space-size"],
+    type: "number",
+    default: 20,
+    env: "MESHBLU_CONNECTOR_MAX_OLD_SPACE_SIZE",
+    help: "Set the v8 flag max_old_space_size for the connector. Size in megabytes.",
+    helpArg: "SIZE_IN_MB",
+  },
+  {
     names: ["node-version"],
     type: "string",
     env: "MESHBLU_CONNECTOR_NODE_VERSION",
@@ -62,7 +70,7 @@ class MeshbluConnectorPkgerCommand {
       console.log(require("pkg/package.json").version)
       return Promise.resolve()
     }
-    const { connectorPath, target, nodeVersion } = options
+    const { connectorPath, target, nodeVersion, maxOldSpaceSize } = options
     const spinner = ora("Pkg-ing connector").start()
 
     const pkger = new MeshbluConnectorPkger({
@@ -70,6 +78,7 @@ class MeshbluConnectorPkgerCommand {
       nodeVersion,
       spinner,
       target,
+      maxOldSpaceSize,
     })
     return pkger
       .package()

@@ -8,10 +8,11 @@ const defaultsDeep = require("lodash.defaultsdeep")
 const debug = require("debug")("meshblu-connector-pkger")
 
 class MeshbluConnectorPkger {
-  constructor({ target, connectorPath, spinner, nodeVersion }) {
+  constructor({ target, connectorPath, spinner, nodeVersion, maxOldSpaceSize }) {
     this.nodeVersion = nodeVersion
     this.packageJSON = fs.readJsonSync(path.join(connectorPath, "package.json"))
     this.connectorPath = connectorPath
+    this.maxOldSpaceSize = maxOldSpaceSize
     this.target = target || this.getTarget()
     process.env.MESHBLU_CONNECTOR_TARGET = this.target
     this.type = this.packageJSON.name
@@ -163,9 +164,13 @@ class MeshbluConnectorPkger {
         const outputFile = path.join(this.deployPath, key + this.getExtension())
         const file = path.resolve(bins[key])
         const args = ["--config", destConfig, "--target", this.target, "--output", outputFile, file]
+        if (this.maxOldSpaceSize) {
+          args.unshift("--options", `max_old_space_size=${this.maxOldSpaceSize}`)
+        }
         if (require("debug")("pkg").enabled) {
           args.unshift("--debug")
         }
+        debug("building pkg with", args)
         return pkgExec(args)
       })
     })
