@@ -156,8 +156,9 @@ class MeshbluConnectorPkger {
       bins = bin
     }
 
-    if (!bins[this.type])
-      return Promise.reject(new Error(`meshblu-connector-pkger requires "bin" entry in package.json for ${this.type}`))
+    bins = bins || {}
+
+    if (!bins[this.type]) return Promise.reject(new Error(`meshblu-connector-pkger requires "bin" entry in package.json for ${this.type}`))
 
     return this.copyPkgConfig({ srcConfig, destConfig }).then(() => {
       return Promise.each(Object.keys(bins), key => {
