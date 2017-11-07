@@ -181,6 +181,7 @@ class MeshbluConnectorPkger {
     const pkgOptions = this.packageJSON.pkg
     const srcOptions = fs.readJsonSync(srcConfig)
     const data = defaultsDeep(pkgOptions, srcOptions)
+    debug('pkg-config.json', JSON.stringify(data, null, 2))
     return fs.writeJson(destConfig, data, { spaces: 2 })
   }
 }
